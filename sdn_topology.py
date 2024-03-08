@@ -11,9 +11,9 @@ def custom_topology():
     # Add an SDN switch
     s1 = net.addSwitch('s1')
 
-    # Add Docker containers
-    d1 = net.addDocker('d1', ip='10.0.0.1', dimage="simple-web-server", ports=[80], publish_all=True)
-    d2 = net.addDocker('d2', ip='10.0.0.2', dimage="simple-web-server", ports=[80], publish_all=True)
+    # Add Docker containers with static ports
+    d1 = net.addDocker('d1', ip='10.0.0.1', dimage="simple-web-server", ports=[8081], publish_all=True)
+    d2 = net.addDocker('d2', ip='10.0.0.2', dimage="simple-web-server", ports=[8082], publish_all=True)
 
     # Create links between nodes
     net.addLink(d1, s1)
@@ -21,6 +21,12 @@ def custom_topology():
 
     # Start the network
     net.start()
+
+    # Print the static URLs of the Docker containers
+    print("\nStatic Docker Container URLs:")
+    for i, container in enumerate(net.containers):
+        port = container.ports[0]
+        print(f'Container d{i+1}: http://localhost:{port}')
 
     # Connect switches to the controller
     s1.start([c0])
